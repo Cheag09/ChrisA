@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Exporter</title>
+</head>
+<body>
+    <h2>Data Entry Form</h2>
+
+    <!-- Input form with fields for data entry -->
+    <form id="dataForm">
+        <label for="locationName">Location Name:</label>
+        <input type="text" id="locationName" name="locationName"><br><br>
+
+        <label for="cash">Cash:</label>
+        <input type="number" id="cash" name="cash" step="0.01"><br><br>
+
+        <label for="cashOrderCount">Cash Order Count:</label>
+        <input type="number" id="cashOrderCount" name="cashOrderCount"><br><br>
+
+        <label for="credit">Credit:</label>
+        <input type="number" id="credit" name="credit" step="0.01"><br><br>
+
+        <label for="creditOrderCount">Credit Order Count:</label>
+        <input type="number" id="creditOrderCount" name="creditOrderCount"><br><br>
+
+        <label for="tax">Tax:</label>
+        <input type="number" id="tax" name="tax" step="0.01"><br><br>
+
+        <label for="total">Total:</label>
+        <input type="number" id="total" name="total" step="0.01"><br><br>
+
+        <label for="refund">Refund:</label>
+        <input type="number" id="refund" name="refund" step="0.01"><br><br>
+
+        <label for="tips">Tips:</label>
+        <input type="number" id="tips" name="tips" step="0.01"><br><br>
+
+        <button type="button" onclick="addData()">Add Entry</button>
+    </form>
+
+    <br>
+    <button onclick="exportCSV()">Export to CSV</button>
+
+    <!-- Table to display entry history -->
+    <h3>Entry History</h3>
+    <table border="1" id="entryTable">
+        <thead>
+            <tr>
+                <th>Location Name</th>
+                <th>Cash</th>
+                <th>Cash Order Count</th>
+                <th>Credit</th>
+                <th>Credit Order Count</th>
+                <th>Tax</th>
+                <th>Total</th>
+                <th>Refund</th>
+                <th>Tips</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be added here dynamically -->
+        </tbody>
+    </table>
+
+    <script>
+        // Initialize an array to store entries
+        let entries = [];
+        let currentLocationName = "";
+
+        // Function to add data to the entries array and display it in the table
+        function addData() {
+            const locationName = document.getElementById("locationName").value.trim();
+            const cash = document.getElementById("cash").value;
+            const cashOrderCount = document.getElementById("cashOrderCount").value;
+            const credit = document.getElementById("credit").value;
+            const creditOrderCount = document.getElementById("creditOrderCount").value;
+            const tax = document.getElementById("tax").value;
+            const total = document.getElementById("total").value;
+            const refund = document.getElementById("refund").value;
+            const tips = document.getElementById("tips").value;
+
+            // Check if the location name is different, then add an empty line and location name in the entries
+            if (locationName !== currentLocationName) {
+                entries.push({ locationName, separator: true });  // Separator row
+                currentLocationName = locationName;
+            }
+
+            // Add the entry to the entries array
+            const entry = { locationName, cash, cashOrderCount, credit, creditOrderCount, tax, total, refund, tips };
+            entries.push(entry);
+
+            // Add location name row if it's a new location
+            if (locationName !== currentLocationName) {
+                const table = document.getElementById("entryTable").getElementsByTagName('tbody')[0];
+                const locationRow = table.insertRow();
+                const locationCell = locationRow.insertCell(0);
+                locationCell.colSpan = 9;
+                locationCell.textContent = `Location: ${locationName}`;
+            }
+
+            // Add the data row
+            const table = document.getElementById("entryTable").getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+            [locationName, cash, cashOrderCount, credit, creditOrderCount, tax, total, refund, tips].forEach(value => {
+                const cell = newRow.insertCell();
+                cell.textContent = value;
+            });
+
+            // Clear the form fields after submission
+            document.getElementById("dataForm").reset();
+            alert("Entry added!");
+        }
+
+        // Function to export the entries array to a CSV file
+        function exportCSV() {
+            if (entries.length === 0) {
+                alert("No data to export!");
+                return;
+            }
+
+            let csv = "";
+
+            // Add each entry or location separator to the CSV file
+            entries.forEach(entry => {
+                if (entry.separator) {
+                    csv += `\nLocation: ${entry.locationName}\n`;
+                } else {
+                    csv += `${entry.locationName},${entry.cash},${entry.cashOrderCount},${entry.credit},${entry.creditOrderCount},${entry.tax},${entry.total},${entry.refund},${entry.tips}\n`;
+                }
+            });
+
+            // Create a blob object for the CSV file
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+
+            // Set download attributes and initiate the download
+            a.setAttribute("href", url);
+            a.setAttribute("download", "entries.csv");
+            a.click();
+
+            // Revoke the URL after download
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
