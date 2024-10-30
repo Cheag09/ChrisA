@@ -18,14 +18,14 @@
     <label for="tax">Tax:</label>
     <input type="number" id="tax" name="tax" step="0.01"><br><br>
 
-    <label for="total">Total:</label>
-    <input type="number" id="total" name="total" step="0.01"><br><br>
+    <label for="tips">Tips:</label>
+    <input type="number" id="tips" name="tips" step="0.01"><br><br>
 
     <label for="refund">Refund:</label>
     <input type="number" id="refund" name="refund" step="0.01"><br><br>
 
-    <label for="tips">Tips:</label>
-    <input type="number" id="tips" name="tips" step="0.01"><br><br>
+    <label for="total">Total:</label>
+    <input type="number" id="total" name="total" step="0.01"><br><br>
 
     <button type="button" onclick="addData()">Add Entry</button>
     <button type="button" onclick="resetDay()">Reset Day</button>
@@ -45,9 +45,9 @@
             <th>Credit</th>
             <th>Credit Order Count</th>
             <th>Tax</th>
-            <th>Total</th>
-            <th>Refund</th>
             <th>Tips</th>
+            <th>Refund</th> <!-- Moved Refund here -->
+            <th>Total</th>   <!-- Moved Total here -->
         </tr>
     </thead>
     <tbody>
@@ -74,9 +74,9 @@
         const credit = document.getElementById("credit").value;
         const creditOrderCount = document.getElementById("creditOrderCount").value;
         const tax = document.getElementById("tax").value;
-        const total = document.getElementById("total").value;
-        const refund = document.getElementById("refund").value;
         const tips = document.getElementById("tips").value;
+        const refund = document.getElementById("refund").value; // No change
+        const total = document.getElementById("total").value;   // No change
 
         // If the location name is different, add a separator row
         if (locationName !== currentLocationName) {
@@ -85,13 +85,13 @@
         }
 
         // Add the entry to the entries array
-        const entry = { locationName, cash, cashOrderCount, credit, creditOrderCount, tax, total, refund, tips };
+        const entry = { locationName, cash, cashOrderCount, credit, creditOrderCount, tax, tips, refund, total }; // Changed order
         entries.push(entry);
 
         // Display the entry in the table
         const table = document.getElementById("entryTable").getElementsByTagName('tbody')[0];
         const newRow = table.insertRow();
-        [locationName, cash, cashOrderCount, credit, creditOrderCount, tax, total, refund, tips].forEach(value => {
+        [locationName, cash, cashOrderCount, credit, creditOrderCount, tax, tips, refund, total].forEach(value => {
             const cell = newRow.insertCell();
             cell.textContent = value;
         });
@@ -116,7 +116,7 @@
         dayTable.border = "1";
 
         // Set up table headers
-        const headers = ["Location Name", "Cash", "Cash Order Count", "Credit", "Credit Order Count", "Tax", "Total", "Refund", "Tips"];
+        const headers = ["Location Name", "Cash", "Cash Order Count", "Credit", "Credit Order Count", "Tax", "Tips", "Refund", "Total"]; // Changed order
         const headerRow = dayTable.insertRow();
         headers.forEach(header => {
             const cell = headerRow.insertCell();
@@ -133,7 +133,7 @@
                 separatorCell.style.fontWeight = "bold";
             } else {
                 const row = dayTable.insertRow();
-                [entry.locationName, entry.cash, entry.cashOrderCount, entry.credit, entry.creditOrderCount, entry.tax, entry.total, entry.refund, entry.tips].forEach(value => {
+                [entry.locationName, entry.cash, entry.cashOrderCount, entry.credit, entry.creditOrderCount, entry.tax, entry.tips, entry.refund, entry.total].forEach(value => {
                     const cell = row.insertCell();
                     cell.textContent = value;
                 });
@@ -158,11 +158,11 @@
             return;
         }
 
-        let csv = "Location Name,Cash,Cash Order Count,Credit,Credit Order Count,Tax,Total,Refund,Tips\n";
+        let csv = "Location Name,Cash,Cash Order Count,Credit,Credit Order Count,Tax,Tips,Refund,Total\n"; // Changed order
 
         entries.forEach(entry => {
             if (!entry.headerRow) {
-                csv += `${entry.locationName},${entry.cash},${entry.cashOrderCount},${entry.credit},${entry.creditOrderCount},${entry.tax},${entry.total},${entry.refund},${entry.tips}\n`;
+                csv += `${entry.locationName},${entry.cash},${entry.cashOrderCount},${entry.credit},${entry.creditOrderCount},${entry.tax},${entry.tips},${entry.refund},${entry.total}\n`; // Changed order
             }
         });
 
